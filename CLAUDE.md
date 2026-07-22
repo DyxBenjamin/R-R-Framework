@@ -23,8 +23,8 @@ Everything else is automated:
   "version": "0.1.0",
   "description": "What this plugin does",
   "author": {
-    "name": "CHANGE_ME",
-    "email": "CHANGE_ME@example.com"
+    "name": "benjamin",
+    "email": "dev@benjamin-garrido.com"
   },
   "keywords": ["relevant", "tags"]
 }

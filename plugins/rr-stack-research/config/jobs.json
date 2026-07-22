@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "updated_at": "2026-07-22",
+  "boards": [
+    {
+      "id": "linkedin-jobs",
+      "name": "LinkedIn Jobs",
+      "region": "global",
+      "countries": ["*"],
+      "base_url": "https://www.linkedin.com/jobs/search/",
+      "search_query_template": "site:linkedin.com/jobs \"{client}\"",
+      "access": {
+        "requires_login": true,
+        "js_rendered": true,
+        "notes": "El listado completo pide login. Preferir busqueda web (site:) para encontrar postings publicos indexados; usar WebFetch solo sobre URLs concretas que ya resolvieron a contenido publico."
+      },
+      "enabled": true
+    },
+    {
+      "id": "indeed",
+      "name": "Indeed",
+      "region": "global",
+      "countries": ["*"],
+      "base_url": "https://www.indeed.com/jobs",
+      "search_query_template": "site:indeed.com \"{client}\"",
+      "access": {
+        "requires_login": false,
+        "js_rendered": true,
+        "notes": "Resultados publicos pero con paginacion via JS. Buscar primero con WebSearch, luego WebFetch a paginas de detalle concretas."
+      },
+      "enabled": true
+    },
+    {
+      "id": "glassdoor",
+      "name": "Glassdoor",
+      "region": "global",
+      "countries": ["*"],
+      "base_url": "https://www.glassdoor.com/Job/",
+      "search_query_template": "site:glassdoor.com \"{client}\" jobs",
+      "access": {
+        "requires_login": true,
+        "js_rendered": true,
+        "notes": "Muros de login agresivos despues de pocas vistas. Priorizar resultados cacheados por el buscador y snippets de la SERP."
+      },
+      "enabled": true
+    },
+    {
+      "id": "we-work-remotely",
+      "name": "We Work Remotely",
+      "region": "global",
+      "countries": ["*"],
+      "base_url": "https://weworkremotely.com/remote-jobs/search",
+      "search_query_template": "site:weworkremotely.com \"{client}\"",
+      "access": {
+        "requires_login": false,
+        "js_rendered": false,
+        "notes": "HTML estatico, apto para WebFetch directo sobre resultados de busqueda."
+      },
+      "enabled": true
+    },
+    {
+      "id": "computrabajo",
+      "name": "Computrabajo",
+      "region": "latam",
+      "countries": ["AR", "MX", "CO", "CL", "PE", "EC", "UY", "VE", "GT", "DO"],
+      "base_url": "https://www.computrabajo.com",
+      "search_query_template": "site:computrabajo.com \"{client}\"",
+      "access": {
+        "requires_login": false,
+        "js_rendered": false,
+        "notes": "Un dominio por pais (computrabajo.com.ar, .com.mx, etc). Ajustar el dominio segun el pais objetivo del cliente antes de buscar."
+      },
+      "enabled": true
+    },
+    {
+      "id": "bumeran",
+      "name": "Bumeran",
+      "region": "latam",
+      "countries": ["AR", "MX", "PE"],
+      "base_url": "https://www.bumeran.com.ar",
+      "search_query_template": "site:bumeran.com \"{client}\"",
+      "access": {
+        "requires_login": false,
+        "js_rendered": true,
+        "notes": "Dominios separados por pais (.com.ar, .com.mx, .com.pe). Ajustar antes de buscar."
+      },
+      "enabled": true
+    },
+    {
+      "id": "getonboard",
+      "name": "GetOnBoard",
+      "region": "latam",
+      "countries": ["CL", "CO", "MX", "PE", "UY"],
+      "base_url": "https://www.getonbrd.com/empleos",
+      "search_query_template": "site:getonbrd.com \"{client}\"",
+      "access": {
+        "requires_login": false,
+        "js_rendered": true,
+        "notes": "Enfocado 100% en roles tech; suele listar el stack de forma explicita en cada posting, buena fuente de alta confianza."
+      },
+      "enabled": true
+    },
+    {
+      "id": "occ-mundial",
+      "name": "OCC Mundial",
+      "region": "latam",
+      "countries": ["MX"],
+      "base_url": "https://www.occ.com.mx/empleos",
+      "search_query_template": "site:occ.com.mx \"{client}\"",
+      "access": {
+        "requires_login": false,
+        "js_rendered": true,
+        "notes": "Portal lider en Mexico; paginacion via JS en algunos listados."
+      },
+      "enabled": true
+    }
+  ],
+  "stack_signal_keywords": {
+    "languages": ["JavaScript", "TypeScript", "Python", "Java", "Go", "Ruby", "PHP", "C#", "Kotlin", "Swift", "Rust"],
+    "frameworks": ["React", "Angular", "Vue", "Next.js", "Node.js", "Django", "Flask", "Spring", "Rails", ".NET", "Laravel"],
+    "cloud_infra": ["AWS", "GCP", "Azure", "Kubernetes", "Docker", "Terraform"],
+    "data": ["PostgreSQL", "MySQL", "MongoDB", "Redis", "Kafka", "Snowflake", "BigQuery"],
+    "notes": "Lista de arranque, no exhaustiva. El skill debe registrar cualquier tecnologia mencionada explicitamente en una publicacion aunque no aparezca aqui."
+  }
+}

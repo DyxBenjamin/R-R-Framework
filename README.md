@@ -1,54 +1,64 @@
-# Claude Marketplace Template
+# R&R Framework — Claude Marketplace
 
-A GitHub template for a Claude Code plugin marketplace. It contains one example
-plugin (`base-plugin`) and a CI pipeline that versions and releases plugins from
-commit messages.
+Marketplace de plugins de Claude Code para **Research & Report (R&R)**:
+investigacion de clientes/prospectos e inteligencia comercial automatizada.
+Nace de este [GitHub template](https://github.com/DyxBenjamin/R-R-Framework)
+y trae una CI que versiona y publica cada plugin a partir de los mensajes de
+commit.
 
-This is a GitHub template, not a fork. Use **Use this template**, replace the
-placeholders, and add your plugins.
+## Plugins en este marketplace
 
-## Install (for users of your marketplace)
+| Plugin | Que hace |
+| --- | --- |
+| [`base-plugin`](plugins/base-plugin) | Plugin de ejemplo: el skill `skill-creator` y un hook de muestra. |
+| [`rr-stack-research`](plugins/rr-stack-research) | Investiga el stack tecnologico de un cliente rastreando sus ofertas de empleo en portales globales y LATAM, con checklist de progreso persistente. |
 
-Once your repository is public:
+## Install (para quien instale este marketplace)
 
 ```sh
-/plugin marketplace add CHANGE_ME_USERNAME/CHANGE_ME_REPO
-/plugin install base-plugin@my-marketplace
+/plugin marketplace add DyxBenjamin/R-R-Framework
+/plugin install rr-stack-research@rr-framework
+/plugin install base-plugin@rr-framework
 ```
 
-`base-plugin@my-marketplace` is `<plugin-name>@<marketplace-name>`. The
-marketplace name is the `name` field in `.claude-plugin/marketplace.json`.
+`rr-stack-research@rr-framework` es `<plugin-name>@<marketplace-name>`. El
+nombre del marketplace es el campo `name` en `.claude-plugin/marketplace.json`.
 
-## Setup
+## Setup (si se vuelve a usar como template)
 
-1. Create a repository from this template.
-2. Replace every `CHANGE_ME` (search the repo). They live here:
+1. Crear un repositorio a partir de este template.
+2. Reemplazar los placeholders `CHANGE_ME` restantes (buscar en el repo). Viven
+   en:
 
    | File | Field |
    | --- | --- |
    | `.claude-plugin/marketplace.json` | `name`, `owner.name`, `owner.email` |
-   | `plugins/base-plugin/.claude-plugin/plugin.json` | `author.name`, `author.email` |
+   | `plugins/<plugin>/.claude-plugin/plugin.json` | `author.name`, `author.email` |
    | `CLAUDE.md` | `plugin.json` template author |
    | `README.md` | install commands |
 
-If you rename `plugins/base-plugin/`, also rename its entry in
-`marketplace.json` and `.release-please-manifest.json`. CI keeps them in sync
-after the first push, but fixing them up front avoids a stray entry.
+Si renombras un directorio en `plugins/`, tambien renombra su entrada en
+`marketplace.json` y `.release-please-manifest.json`. CI los mantiene
+sincronizados despues del primer push, pero corregirlo antes evita una entrada
+huerfana.
 
 ## Test locally
 
-Load the plugin from disk without installing it:
+Load a plugin from disk without installing it:
 
 ```sh
+claude --plugin-dir ./plugins/rr-stack-research
 claude --plugin-dir ./plugins/base-plugin
 ```
 
-Run `/base-plugin:skill-creator` to confirm the skill loads, and
-`/reload-plugins` to pick up edits without restarting. Validate the manifests:
+Run `/rr-stack-research:stack-research` (or `/base-plugin:skill-creator`) to
+confirm the skill loads, and `/reload-plugins` to pick up edits without
+restarting. Validate the manifests:
 
 ```sh
-claude plugin validate .                      # marketplace.json
-claude plugin validate ./plugins/base-plugin  # plugin.json + skills/agents/hooks
+claude plugin validate .                            # marketplace.json
+claude plugin validate ./plugins/rr-stack-research   # plugin.json + skills
+claude plugin validate ./plugins/base-plugin         # plugin.json + skills/agents/hooks
 ```
 
 `claude plugin validate` is a local schema check; no account or network needed.
@@ -126,14 +136,22 @@ component map, or the
 │       ├── release.yml         # sync config + Release Please
 │       └── validate.yml        # claude plugin validate on push/PR
 ├── plugins/
-│   └── base-plugin/
+│   ├── base-plugin/
+│   │   ├── .claude-plugin/
+│   │   │   └── plugin.json
+│   │   ├── hooks/
+│   │   │   ├── hooks.json      # sample hook — replace or delete
+│   │   │   └── example-guard.sh
+│   │   ├── skills/
+│   │   │   └── skill-creator/  # Anthropic's skill, Apache-2.0
+│   │   └── README.md
+│   └── rr-stack-research/
 │       ├── .claude-plugin/
 │       │   └── plugin.json
-│       ├── hooks/
-│       │   ├── hooks.json      # sample hook — replace or delete
-│       │   └── example-guard.sh
+│       ├── config/
+│       │   └── jobs.json       # job boards + stack keyword list
 │       ├── skills/
-│       │   └── skill-creator/  # Anthropic's skill, Apache-2.0
+│       │   └── stack-research/ # research + persistent checklist logic
 │       └── README.md
 ├── scripts/
 │   └── generate-release-config.js
@@ -151,5 +169,4 @@ Exception: `plugins/base-plugin/skills/skill-creator/` is Anthropic's skill,
 under the Apache License 2.0 (terms in that folder's `LICENSE.txt`). Only that
 skill is Apache-2.0; everything else, including skills you add, is covered by The
 Unlicense.
-```
 

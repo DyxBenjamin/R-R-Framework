@@ -41,6 +41,17 @@
           "jsonpath": "$.version"
         }
       ]
+    },
+    "plugins/rr-stack-research": {
+      "component": "rr-stack-research",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": ".claude-plugin/plugin.json",
+          "jsonpath": "$.version"
+        }
+      ]
     }
   }
 }

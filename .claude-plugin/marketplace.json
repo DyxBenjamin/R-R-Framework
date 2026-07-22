@@ -1,12 +1,12 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
-  "name": "my-marketplace",
+  "name": "rr-framework",
   "owner": {
-    "name": "CHANGE_ME",
-    "email": "CHANGE_ME@example.com"
+    "name": "benjamin",
+    "email": "dev@benjamin-garrido.com"
   },
   "version": "1.0.0",
-  "description": "Claude Code plugin marketplace with automated versioning.",
+  "description": "Marketplace de plugins de Claude Code para Research & Report (R&R): investigacion de clientes/prospectos e inteligencia comercial automatizada.",
   "plugins": [
     {
       "name": "base-plugin",
@@ -18,6 +18,21 @@
         "skills",
         "skill-creator",
         "starter"
+      ]
+    },
+    {
+      "name": "rr-stack-research",
+      "source": "./plugins/rr-stack-research",
+      "description": "Investiga el stack tecnologico de un cliente rastreando sus ofertas de empleo en portales globales y LATAM, con un checklist de progreso persistente que se retoma entre sesiones.",
+      "version": "0.1.0",
+      "keywords": [
+        "research",
+        "stack-tecnologico",
+        "empleos",
+        "recruiting-intel",
+        "checklist",
+        "osint",
+        "research-and-report"
       ]
     }
   ]

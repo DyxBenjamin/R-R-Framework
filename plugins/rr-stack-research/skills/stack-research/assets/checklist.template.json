@@ -1,0 +1,29 @@
+{
+  "client": "",
+  "slug": "",
+  "created_at": "",
+  "updated_at": "",
+  "focus": {
+    "roles": [],
+    "countries": []
+  },
+  "boards": [
+    {
+      "id": "",
+      "name": "",
+      "status": "pending",
+      "postings_found": 0,
+      "stack_signals": [],
+      "posting_urls": [],
+      "checked_at": null,
+      "error": null
+    }
+  ],
+  "aggregate_stack": {
+    "languages": [],
+    "frameworks": [],
+    "cloud_infra": [],
+    "data": [],
+    "other": []
+  }
+}
