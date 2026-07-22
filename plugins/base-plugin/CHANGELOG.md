@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.2.0](https://github.com/DyxBenjamin/R-R-Framework/compare/base-plugin-v0.1.0...base-plugin-v0.2.0) (2026-07-22)
+## 0.1.0 (2026-07-22)
 
 
 ### Features
