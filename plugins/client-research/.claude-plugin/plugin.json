@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "client-research",
+  "version": "0.1.0",
+  "description": "Investiga clientes/prospectos: stack tecnologico (ofertas de empleo), proveedores actuales del cliente, y si nuestros competidores o partners ya trabajaron con ese cliente. Checklist de progreso persistente por skill que se retoma entre sesiones.",
+  "author": {
+    "name": "benjamin",
+    "email": "dev@benjamin-garrido.com"
+  },
+  "keywords": [
+    "research",
+    "client-research",
+    "stack-tecnologico",
+    "vendor-research",
+    "competitor-intelligence",
+    "empleos",
+    "recruiting-intel",
+    "checklist",
+    "osint",
+    "research-and-report"
+  ]
+}

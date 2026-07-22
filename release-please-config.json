@@ -42,8 +42,8 @@
         }
       ]
     },
-    "plugins/rr-stack-research": {
-      "component": "rr-stack-research",
+    "plugins/client-research": {
+      "component": "client-research",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
         {

@@ -3,18 +3,19 @@ name: stack-research
 description: Investiga el stack tecnologico de un cliente, prospecto o empresa rastreando sus ofertas de empleo publicadas en portales de trabajo globales y LATAM (LinkedIn Jobs, Indeed, Glassdoor, We Work Remotely, Computrabajo, Bumeran, GetOnBoard, OCC Mundial). Mantiene un checklist de progreso por cliente en disco, despacha la busqueda de cada portal en background con sub-agentes, y se puede retomar en cualquier momento sin repetir trabajo ya hecho. Usar siempre que el usuario pida investigar el stack tecnologico, las tecnologias, herramientas o vacantes de un cliente/empresa, pida un "research de stack", "tech stack research", "que tecnologias usa <empresa>", o pregunte por el estado de una investigacion de stack ya iniciada.
 ---
 
-# R&R Stack Research
+# Stack Research
 
 Investiga que tecnologias usa una empresa cliente/prospecto analizando sus
 ofertas de empleo publicas en varios portales de trabajo, y arma un reporte de
 stack tecnologico con nivel de confianza segun cuantas fuentes independientes
 lo corroboran.
 
-El trabajo se organiza como un **checklist persistente por cliente**: cada
-portal es un item que pasa por `pending -> in_progress -> done|failed`. El
-checklist vive en un archivo JSON dentro del proyecto (no en la conversacion),
-asi que una investigacion se puede interrumpir, retomar en otra sesion, o
-correr en paralelo en background sin perder progreso.
+Es uno de los tres skills de `client-research` (junto a `vendor-research` y
+`competitor-research`) que comparten el mismo mecanismo general de checklist
+persistente en disco — ver `../../references/checklist-pattern.md` para el
+patron completo. Este documento cubre solo lo especifico de stack-research:
+la forma concreta del checklist (`boards`/`stack_signals`, no el `items`
+generico del doc compartido) y como buscar en cada portal de empleo.
 
 ## Cuando usar este skill
 
@@ -45,30 +46,27 @@ Antes de arrancar, confirma (o infiere del mensaje del usuario):
 - `assets/checklist.template.json` - forma del checklist que se instancia por
   cliente (no editar el template; copiarlo).
 
-## Estado en disco (el "background" del checklist)
-
-Todo el progreso vive en el proyecto del usuario, no en el plugin:
+## Estado en disco
 
 ```text
-.rr-stack-research/<slug-del-cliente>/checklist.json
-.rr-stack-research/<slug-del-cliente>/report.md
+.client-research/<slug-del-cliente>/stack-research/checklist.json
+.client-research/<slug-del-cliente>/stack-research/report.md
 ```
 
 `slug-del-cliente` es el nombre del cliente en kebab-case (minusculas, sin
 acentos, espacios -> guiones). El checklist sigue la forma de
 `assets/checklist.template.json`: un objeto por cliente con un array `boards`
-(uno por portal de `jobs.json`) y un `aggregate_stack` final.
-
-Este archivo es la fuente de verdad del progreso. Escribilo despues de **cada**
-cambio de estado (no solo al final) para que una interrupcion a mitad de
-camino no pierda el trabajo ya hecho.
+(uno por portal de `jobs.json`) y un `aggregate_stack` final — mismo mecanismo
+`pending -> in_progress -> done|failed` que describe
+`../../references/checklist-pattern.md`, con nombres de campo propios de este
+skill.
 
 ## Flujo
 
 ### 1. Preparar el checklist
 
 - Calcular `slug` del cliente y `checklist_path =
-  .rr-stack-research/<slug>/checklist.json`.
+  .client-research/<slug>/stack-research/checklist.json`.
 - Si el archivo ya existe y no se pidio refresh: cargarlo. Los portales en
   `done` se saltan; los que estan en `pending`, `in_progress` (una corrida
   anterior quedo a medias) o `failed` se vuelven a intentar.
@@ -127,7 +125,7 @@ Cuando todos los portales quedan en un estado terminal (`done`, `failed` o
    portales distintos es mas confiable que una que aparece en 1 solo posting).
 2. Escribir el resultado en `aggregate_stack` del checklist, agrupado como en
    el template (`languages`, `frameworks`, `cloud_infra`, `data`, `other`).
-3. Generar `.rr-stack-research/<slug>/report.md` con: nombre del cliente y
+3. Generar `.client-research/<slug>/stack-research/report.md` con: nombre del cliente y
    fecha, tabla de hallazgos por portal (con links fuente), y el resumen de
    stack agregado ordenado por confianza (# de portales que lo corroboran).
 4. Responder al usuario en el chat con el resumen y la ruta del reporte

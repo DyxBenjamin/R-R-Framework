@@ -11,18 +11,23 @@ commit.
 | Plugin | Que hace |
 | --- | --- |
 | [`base-plugin`](plugins/base-plugin) | Plugin de ejemplo: el skill `skill-creator` y un hook de muestra. |
-| [`rr-stack-research`](plugins/rr-stack-research) | Investiga el stack tecnologico de un cliente rastreando sus ofertas de empleo en portales globales y LATAM, con checklist de progreso persistente. |
+| [`client-research`](plugins/client-research) | Investiga clientes/prospectos: stack tecnologico (ofertas de empleo), proveedores actuales del cliente, y si nuestros competidores/partners ya trabajaron con ese cliente. Checklist de progreso persistente por skill. |
 
 ## Install (para quien instale este marketplace)
 
 ```sh
 /plugin marketplace add DyxBenjamin/R-R-Framework
-/plugin install rr-stack-research@rr-framework
+/plugin install client-research@rr-framework
 /plugin install base-plugin@rr-framework
 ```
 
-`rr-stack-research@rr-framework` es `<plugin-name>@<marketplace-name>`. El
+`client-research@rr-framework` es `<plugin-name>@<marketplace-name>`. El
 nombre del marketplace es el campo `name` en `.claude-plugin/marketplace.json`.
+
+> El plugin se llamaba `rr-stack-research` hasta esta versión — fue renombrado
+> a `client-research` al sumarle los skills `vendor-research` y
+> `competitor-research`. `rr-stack-research@rr-framework` ya no es instalable;
+> quien lo tuviera instalado necesita reinstalar bajo el nuevo nombre.
 
 ## Setup (si se vuelve a usar como template)
 
@@ -47,18 +52,19 @@ huerfana.
 Load a plugin from disk without installing it:
 
 ```sh
-claude --plugin-dir ./plugins/rr-stack-research
+claude --plugin-dir ./plugins/client-research
 claude --plugin-dir ./plugins/base-plugin
 ```
 
-Run `/rr-stack-research:stack-research` (or `/base-plugin:skill-creator`) to
-confirm the skill loads, and `/reload-plugins` to pick up edits without
-restarting. Validate the manifests:
+Run `/client-research:stack-research` (or `:vendor-research`,
+`:competitor-research`, `/base-plugin:skill-creator`) to confirm a skill
+loads, and `/reload-plugins` to pick up edits without restarting. Validate the
+manifests:
 
 ```sh
-claude plugin validate .                            # marketplace.json
-claude plugin validate ./plugins/rr-stack-research   # plugin.json + skills
-claude plugin validate ./plugins/base-plugin         # plugin.json + skills/agents/hooks
+claude plugin validate .                          # marketplace.json
+claude plugin validate ./plugins/client-research   # plugin.json + skills
+claude plugin validate ./plugins/base-plugin       # plugin.json + skills/agents/hooks
 ```
 
 `claude plugin validate` is a local schema check; no account or network needed.
@@ -145,13 +151,19 @@ component map, or the
 │   │   ├── skills/
 │   │   │   └── skill-creator/  # Anthropic's skill, Apache-2.0
 │   │   └── README.md
-│   └── rr-stack-research/
+│   └── client-research/
 │       ├── .claude-plugin/
 │       │   └── plugin.json
 │       ├── config/
-│       │   └── jobs.json       # job boards + stack keyword list
+│       │   ├── jobs.json         # job boards + stack keyword list
+│       │   ├── company.json      # our own company (competitor-research anchor)
+│       │   └── competitors.json  # cached, hand-curatable competitor/partner list
+│       ├── references/
+│       │   └── checklist-pattern.md  # shared checklist/report mechanism, all 3 skills
 │       ├── skills/
-│       │   └── stack-research/ # research + persistent checklist logic
+│       │   ├── stack-research/     # client's tech stack via job postings
+│       │   ├── vendor-research/    # client's current providers
+│       │   └── competitor-research/ # did our competitors/partners work with this client
 │       └── README.md
 ├── scripts/
 │   └── generate-release-config.js
