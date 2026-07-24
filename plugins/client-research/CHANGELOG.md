@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/DyxBenjamin/R-R-Framework/compare/client-research-v0.1.0...client-research-v0.2.0) (2026-07-24)
+
+
+### Features
+
+* add forensic-report skill with JSON/PDF export and source verification ([36d0257](https://github.com/DyxBenjamin/R-R-Framework/commit/36d02577908662b6445547e9c17d0df550b84666))
+
 ## 0.1.0 (2026-07-22)
 
 Renamed from `rr-stack-research` — see that plugin's own final release notes
