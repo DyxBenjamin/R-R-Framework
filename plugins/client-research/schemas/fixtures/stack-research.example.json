@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "skill": "stack-research",
+  "client": "Acme Demo Corp",
+  "slug": "acme-demo-corp",
+  "created_at": "2026-07-23T10:00:00Z",
+  "updated_at": "2026-07-23T10:14:00Z",
+  "focus": {
+    "roles": ["backend"],
+    "countries": []
+  },
+  "boards": [
+    {
+      "id": "linkedin-jobs",
+      "name": "LinkedIn Jobs",
+      "status": "done",
+      "postings_found": 2,
+      "stack_signals": ["Python", "AWS", "PostgreSQL"],
+      "posting_urls": [
+        {
+          "url": "https://example.com/linkedin/jobs/acme-backend-engineer",
+          "source_type": "job-board",
+          "access_date": "2026-07-23",
+          "publish_date": "2026-07-18"
+        }
+      ],
+      "checked_at": "2026-07-23T10:05:00Z",
+      "error": null
+    },
+    {
+      "id": "getonboard",
+      "name": "GetOnBoard",
+      "status": "done",
+      "postings_found": 0,
+      "stack_signals": [],
+      "posting_urls": [],
+      "checked_at": "2026-07-23T10:07:00Z",
+      "error": null
+    }
+  ],
+  "aggregate_stack": {
+    "languages": ["Python"],
+    "frameworks": [],
+    "cloud_infra": ["AWS"],
+    "data": ["PostgreSQL"],
+    "other": []
+  }
+}

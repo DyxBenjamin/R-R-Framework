@@ -85,10 +85,27 @@ falta), para el cliente pedido:
 ### 1. Preparar el checklist
 
 Calcular `slug` del cliente y `checklist_path =
-.client-research/<slug>/competitor-research/checklist.json`. Si existe y no
-se pidio refresh, cargarlo y continuar desde los items `pending`/
-`in_progress`/`failed`. Si no existe, instanciar un item por cada entrada de
-`config/competitors.json`, todos en `pending`.
+.client-research/<slug>/competitor-research/checklist.json`. Si existe,
+revisar `schema_version`: si falta, migrar ahora (ver "Migracion desde
+version sin `schema_version`" mas abajo) antes de seguir. Si existe (migrado
+o no) y no se pidio refresh, cargarlo y continuar desde los items
+`pending`/`in_progress`/`failed`. Si no existe, instanciar un item por cada
+entrada de `config/competitors.json`, todos en `pending`, siguiendo
+`assets/checklist.template.json` (`schema_version: 1`, `skill:
+"competitor-research"`).
+
+### Migracion desde version sin `schema_version`
+
+Si el checklist en disco no tiene `schema_version`, migrar sobreescribiendo el
+archivo original (sin backup): agregar `schema_version: 1` y `skill:
+"competitor-research"` al nivel superior si faltan, y convertir cada string de
+`source_urls` en un objeto `{url, source_type: null, access_date: null,
+publish_date: null}`. A diferencia de `vendor-research`, aca un item cubre las
+4 categorias de evidencia a la vez para un mismo competidor -- el dato viejo
+no guarda que URL vino de que categoria, asi que `source_type` queda en
+`null` para las entradas migradas (no se puede inferir de forma confiable,
+solo las entradas nuevas lo llevan). Los items `pending`/`in_progress` se
+preservan, la corrida a medias se retoma normal despues de migrar.
 
 ### 2. Buscar evidencia por competidor en background
 
@@ -108,25 +125,31 @@ juntos, cubriendo estas cuatro categorias:
 Igual que en el resto del plugin: WebSearch primero, WebFetch solo sobre URLs
 concretas ya encontradas, nunca login ni bypass de paywalls/CAPTCHAs. Mismo
 criterio de "hasta agotar resultados" antes de dar por cerrado ese competidor.
-El sub-agente devuelve: si encontro evidencia o no, en que categoria(s), y
-hasta 3 URLs fuente.
+El sub-agente devuelve: si encontro evidencia o no, y por cada URL fuente
+(hasta 3), a que categoria pertenece -- `client-site` (portfolio/case
+studies), `press`, `social` (LinkedIn/redes) o `directory` (directorios de
+partners) -- para poder guardarla con su `source_type` correcto.
 
 ### 3. Actualizar el checklist a medida que vuelven los resultados
 
 Marcar cada item `done` con sus `findings` (categorias con evidencia
-encontrada) y `source_urls`, o `done` con `findings: []` si no se encontro
-nada (no es un error, es un resultado valido -- ese competidor probablemente
-no trabajo con este cliente). Guardar el checklist despues de cada
-actualizacion.
+encontrada) y `source_urls` como objetos `{url, source_type: <categoria de
+esa URL>, access_date: <hoy>, publish_date: <si es visible, si no null>}`, o
+`done` con `findings: []` y `source_urls: []` si no se encontro nada (no es
+un error, es un resultado valido -- ese competidor probablemente no trabajo
+con este cliente). Guardar el checklist despues de cada actualizacion.
 
 ### 4. Agregar y reportar
 
-Generar `.client-research/<slug>/competitor-research/report.md`: nombre del
-cliente y fecha, y la lista de competidores/partners con evidencia
-encontrada (cuales categorias, con fuentes) -- omitir o listar aparte a los
-que no dieron ningun resultado. **Es una lista con evidencia, no una
-recomendacion** -- reportar que se encontro y donde, sin opinar sobre que
-hacer con esa informacion.
+Escribir el agregado en `aggregate.competitors_with_evidence` (ver
+`assets/checklist.template.json` y
+`../../schemas/fixtures/competitor-research.example.json` para la forma
+exacta: `name`, `mentions`, `source_types`, `source_urls`) y generar
+`.client-research/<slug>/competitor-research/report.md`: nombre del cliente y
+fecha, y la lista de competidores/partners con evidencia encontrada (cuales
+categorias, con fuentes) -- omitir o listar aparte a los que no dieron ningun
+resultado. **Es una lista con evidencia, no una recomendacion** -- reportar
+que se encontro y donde, sin opinar sobre que hacer con esa informacion.
 
 ## Reglas de acceso
 

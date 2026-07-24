@@ -1,14 +1,5 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-22T00:00:00Z",
-  "open_records": [
-    {
-      "slug": "client-research",
-      "status": "open",
-      "size": "medium",
-      "rounds_completed": 4,
-      "questions_asked": 13,
-      "path": ".agents/kt/plans/client-research.md"
-    }
-  ]
+  "updated_at": "2026-07-23T00:00:00Z",
+  "open_records": []
 }

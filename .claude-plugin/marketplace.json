@@ -23,14 +23,15 @@
     {
       "name": "client-research",
       "source": "./plugins/client-research",
-      "description": "Investiga clientes/prospectos: stack tecnologico (ofertas de empleo), proveedores actuales del cliente, y si nuestros competidores o partners ya trabajaron con ese cliente. Checklist de progreso persistente por skill que se retoma entre sesiones.",
-      "version": "0.1.0",
+      "description": "Investiga clientes/prospectos: stack tecnologico (ofertas de empleo), proveedores actuales del cliente, y si nuestros competidores o partners ya trabajaron con ese cliente. Genera un reporte forense unificado en JSON y PDF con verificacion de fuentes. Checklist de progreso persistente por skill que se retoma entre sesiones.",
+      "version": "0.2.0",
       "keywords": [
         "research",
         "client-research",
         "stack-tecnologico",
         "vendor-research",
         "competitor-intelligence",
+        "forensic-report",
         "empleos",
         "recruiting-intel",
         "checklist",

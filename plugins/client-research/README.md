@@ -1,8 +1,8 @@
 # client-research
 
-Investiga clientes/prospectos desde tres angulos: su stack tecnologico, sus
-proveedores actuales, y si nuestros propios competidores o partners (bSide)
-ya trabajaron con ellos antes.
+Investiga clientes/prospectos desde tres angulos (su stack tecnologico, sus
+proveedores actuales, y si nuestros propios competidores o partners bSide ya
+trabajaron con ellos antes) y arma un reporte forense unificado en JSON y PDF.
 
 ```text
 client-research/
@@ -12,18 +12,34 @@ client-research/
 │   ├── jobs.json              # portales de empleo (stack-research)
 │   ├── company.json           # quienes somos (ancla de competitor-research)
 │   └── competitors.json       # cache curable de competidores/partners de bSide
+├── schemas/
+│   ├── envelope.schema.json   # sobre compartido: schema_version, skill, source_type
+│   ├── report.schema.json     # forma del report.json unificado
+│   └── fixtures/              # ejemplos poblados (sinteticos) de cada forma
 ├── references/
-│   └── checklist-pattern.md   # mecanismo de checklist/reporte, compartido por los 3 skills
+│   └── checklist-pattern.md   # mecanismo de checklist/reporte, compartido por los 4 skills
 └── skills/
     ├── stack-research/        # stack tecnologico del cliente via ofertas de empleo
     ├── vendor-research/       # proveedores actuales del cliente
-    └── competitor-research/   # historial de nuestros competidores/partners con el cliente
+    ├── competitor-research/   # historial de nuestros competidores/partners con el cliente
+    └── forensic-report/       # combina los 3 anteriores en un reporte unico (JSON + PDF)
 ```
 
-> Este plugin se llamaba `rr-stack-research` (solo `stack-research`) hasta
-> esta version. Fue renombrado a `client-research` al sumarle `vendor-research`
-> y `competitor-research` — es un rename tecnico real, `rr-stack-research@rr-framework`
+> Este plugin se llamaba `rr-stack-research` (solo `stack-research`) hasta la
+> version anterior. Fue renombrado a `client-research` al sumarle
+> `vendor-research` y `competitor-research` — `rr-stack-research@rr-framework`
 > ya no es instalable.
+>
+> **Esta version agrega `forensic-report` y con el la primera capacidad de
+> ejecucion de codigo del plugin** — `forensic-report` es el unico skill que
+> declara `Bash` (los otros tres siguen sin pedirlo). Lo usa para invocar un
+> script propio que genera el PDF usando solo la libreria estandar de
+> Python, sin ninguna dependencia externa que instalar. Tambien se
+> redisenio el `checklist.json` de los tres skills existentes a un esquema
+> compartido (`schemas/envelope.schema.json`) — un checklist viejo se migra
+> automaticamente (sobreescribiendo el archivo, sin backup) la primera vez
+> que ese skill corre de nuevo. Detalle completo:
+> `.agents/kt/plans/client-research-reporting.md`.
 
 ## Que hace cada skill
 
@@ -41,8 +57,12 @@ client-research/
   `config/company.json`, curable a mano). Para un cliente dado, busca en cada
   competidor/partner evidencia de que ya trabajo con ese cliente: portfolio/
   case studies, prensa/comunicados, LinkedIn/redes, directorios de partners.
+- **`forensic-report`** — una vez que los tres anteriores terminaron para un
+  cliente (precondicion dura, no genera nada parcial), combina sus hallazgos
+  en `report.json` (con referencias cruzadas entre skills y un resumen de
+  verificacion de fuentes) y lo renderiza a `report.pdf`.
 
-## Checklist persistente (compartido por los 3 skills)
+## Checklist persistente (compartido por los 4 skills)
 
 El progreso de cada corrida se guarda en el proyecto donde se invoca el
 skill (no dentro del plugin), separado por cliente y por skill:
@@ -51,14 +71,16 @@ skill (no dentro del plugin), separado por cliente y por skill:
 .client-research/<cliente>/stack-research/{checklist.json,report.md}
 .client-research/<cliente>/vendor-research/{checklist.json,report.md}
 .client-research/<cliente>/competitor-research/{checklist.json,report.md}
+.client-research/<cliente>/{report.json,report.pdf}   # forensic-report
 ```
 
 Cada item pasa por `pending -> in_progress -> done|failed`, asi que una
 investigacion se puede cortar y retomar despues sin repetir trabajo ya hecho.
-Cada skill escribe su propio `report.md` — no se combinan en un solo dossier.
-El mecanismo completo esta documentado una sola vez en
-`references/checklist-pattern.md` y cada `SKILL.md` lo referencia en vez de
-repetirlo.
+Cada uno de los tres skills de research escribe su propio `report.md` — no
+se combinan en un solo dossier; `forensic-report` es el que arma la vista
+unica a partir de los tres. El mecanismo compartido esta documentado una
+sola vez en `references/checklist-pattern.md` y cada `SKILL.md` lo referencia
+en vez de repetirlo.
 
 ## Uso
 
@@ -67,11 +89,12 @@ Investiga el stack de Acme Corp
 Que proveedores tiene Acme Corp
 Algun competidor nuestro trabajo con Acme Corp?
 Actualiza la lista de competidores de bSide
+Dame el reporte forense de Acme Corp
 ```
 
 Los skills se auto-invocan por descripcion; tambien se pueden llamar
-explicito con `/client-research:stack-research`, `:vendor-research` o
-`:competitor-research`.
+explicito con `/client-research:stack-research`, `:vendor-research`,
+`:competitor-research` o `:forensic-report`.
 
 ## Configuracion
 

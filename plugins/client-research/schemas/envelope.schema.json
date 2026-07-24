@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DyxBenjamin/R-R-Framework/plugins/client-research/schemas/envelope.schema.json",
+  "title": "client-research checklist envelope",
+  "description": "Shared envelope fields every skill's checklist.json carries as top-level siblings alongside its own skill-specific payload (boards/items). Documentation-grade: not wired into CI, but intended to be the single source of truth every skill's checklist.template.json / checklist.example.json is generated from. See ../references/checklist-pattern.md for the full mechanism this schema formalizes.",
+  "$defs": {
+    "envelope": {
+      "type": "object",
+      "required": ["schema_version", "skill", "client", "slug", "created_at", "updated_at"],
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "const": 1,
+          "description": "Bumped whenever the on-disk shape changes in a way a skill needs to detect. A checklist.json missing this field is a legacy (pre-schema_version) file and must be migrated in place before use."
+        },
+        "skill": {
+          "type": "string",
+          "enum": ["stack-research", "vendor-research", "competitor-research"]
+        },
+        "client": { "type": "string" },
+        "slug": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": ["string", "null"], "format": "date-time" }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "in_progress", "done", "failed", "skipped"]
+    },
+    "source_type": {
+      "type": "string",
+      "description": "Fixed taxonomy shared by all four skills. job-board is stack-research-only; the other four are the evidence categories vendor-research and competitor-research already used before this schema (site/prensa/LinkedIn/directorios), given consistent slugs here.",
+      "enum": ["job-board", "client-site", "press", "social", "directory"]
+    },
+    "source": {
+      "type": "object",
+      "description": "Replaces the old bare source_urls/posting_urls string entries. A migrated legacy entry gets access_date/publish_date/source_type set to null -- that metadata was never captured before and can't be reconstructed retroactively; only entries written going forward carry real values.",
+      "required": ["url"],
+      "properties": {
+        "url": { "type": "string", "format": "uri" },
+        "source_type": {
+          "anyOf": [{ "$ref": "#/$defs/source_type" }, { "type": "null" }]
+        },
+        "access_date": {
+          "description": "When the skill actually fetched this URL.",
+          "type": ["string", "null"],
+          "format": "date"
+        },
+        "publish_date": {
+          "description": "When the source content itself was published, if that was discoverable. Often null -- not every page exposes one.",
+          "type": ["string", "null"],
+          "format": "date"
+        }
+      }
+    }
+  }
+}

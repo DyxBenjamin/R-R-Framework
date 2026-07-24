@@ -26,13 +26,16 @@ mitad de camino no pierda el trabajo ya hecho.
 ## Forma del checklist
 
 Un objeto por cliente+skill con una lista de items (uno por portal, fuente,
-o entidad a investigar segun el skill) mas un agregado final:
+o entidad a investigar segun el skill) mas un agregado final. El esquema
+completo (formal, machine-checkable) vive en `../schemas/envelope.schema.json`
+-- esto es un resumen, no la fuente de verdad:
 
 ```json
 {
+  "schema_version": 1,
+  "skill": "",
   "client": "",
   "slug": "",
-  "skill": "",
   "created_at": "",
   "updated_at": "",
   "items": [
@@ -51,9 +54,63 @@ o entidad a investigar segun el skill) mas un agregado final:
 ```
 
 `items` varia segun el skill: en `stack-research` es un portal de empleo de
-`config/jobs.json`; en `vendor-research` es una fuente/tipo de evidencia
-encontrada durante el descubrimiento; en `competitor-research` es un
-competidor/partner de `config/competitors.json`.
+`config/jobs.json` (con su propia forma `boards`/`stack_signals`/
+`aggregate_stack`, ver `skills/stack-research/assets/checklist.template.json`
+-- esa divergencia es intencional, no se unifico con el resto); en
+`vendor-research` es una fuente/tipo de evidencia encontrada durante el
+descubrimiento; en `competitor-research` es un competidor/partner de
+`config/competitors.json`. Los tres comparten el sobre (`schema_version`,
+`skill`, `client`, `slug`, `created_at`, `updated_at`) y la forma de
+`source_urls`/`posting_urls` (ver abajo).
+
+## `schema_version` y migracion
+
+`schema_version` (hoy `1`) es lo que distingue un checklist ya migrado de uno
+viejo. Cada skill, al arrancar, revisa el checklist en disco: si no tiene
+`schema_version`, es un archivo legacy (de antes de este esquema) y hay que
+**migrarlo en el momento, sobreescribiendo el archivo original** (sin backup
+-- decision explicita, ver `.agents/kt/plans/client-research-reporting.md`)
+antes de seguir. Migrar significa: envolver el contenido existente con el
+sobre nuevo (`schema_version: 1`, agregar `skill` si falta), y convertir
+cualquier `source_urls`/`posting_urls` de string suelto a la forma de objeto
+de abajo -- las entradas migradas quedan con `source_type`/`access_date`/
+`publish_date` en `null` porque ese dato nunca se capturo antes y no se puede
+reconstruir; solo las entradas nuevas que se escriban de aca en adelante
+llevan metadata real. Los items en `pending`/`in_progress` de un archivo
+migrado siguen igual (el enum de `status` no cambia), asi que una corrida a
+medias se retoma normal despues de migrar.
+
+## `source_urls` / `posting_urls`: forma y `source_type`
+
+Cada entrada de fuente es un objeto, no un string suelto:
+
+```json
+{
+  "url": "",
+  "source_type": "client-site",
+  "access_date": "2026-07-23",
+  "publish_date": null
+}
+```
+
+`source_type` es un set fijo, compartido por los cuatro skills del plugin
+(ver `../schemas/envelope.schema.json`):
+
+| Valor | Skill que lo usa |
+| --- | --- |
+| `job-board` | `stack-research` (portales de empleo) |
+| `client-site` | `vendor-research`, `competitor-research` (sitio del cliente/competidor) |
+| `press` | `vendor-research`, `competitor-research` (prensa/comunicados) |
+| `social` | `vendor-research`, `competitor-research` (LinkedIn/redes) |
+| `directory` | `vendor-research`, `competitor-research` (directorios/procurement) |
+
+## Fixtures
+
+`../schemas/fixtures/` tiene un ejemplo poblado (datos sinteticos, nunca de
+un cliente real) por cada skill mas uno del reporte unificado de
+`forensic-report` -- sirven como referencia de la forma completa y como
+fixtures si en el futuro se agrega un validador (hoy no hay ninguno
+conectado a CI).
 
 ## Flujo
 

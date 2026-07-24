@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DyxBenjamin/R-R-Framework/plugins/client-research/schemas/report.schema.json",
+  "title": "client-research unified report",
+  "description": "Shape of report.json, written by the forensic-report skill at .client-research/<slug>/report.json once stack-research, vendor-research, and competitor-research are all done for a client. report.pdf is a rendering of this same data -- this schema is the single source of truth for both.",
+  "type": "object",
+  "required": ["schema_version", "client", "slug", "generated_at", "sources", "cross_references", "verification_summary"],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "client": { "type": "string" },
+    "slug": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "sources": {
+      "type": "object",
+      "description": "The three source skills' own checklist.json content for this client, verbatim -- forensic-report reads, never rewrites, these files.",
+      "required": ["stack_research", "vendor_research", "competitor_research"],
+      "properties": {
+        "stack_research": { "type": "object" },
+        "vendor_research": { "type": "object" },
+        "competitor_research": { "type": "object" }
+      }
+    },
+    "cross_references": {
+      "type": "array",
+      "description": "Overlaps forensic-report noticed across the three skills' findings -- e.g. a name that shows up as both a vendor-research provider and a stack-research tech signal (same tool, two independent angles corroborating each other).",
+      "items": {
+        "type": "object",
+        "required": ["name", "appears_in", "detail"],
+        "properties": {
+          "name": { "type": "string" },
+          "appears_in": {
+            "type": "array",
+            "items": { "enum": ["stack-research", "vendor-research", "competitor-research"] },
+            "minItems": 2
+          },
+          "detail": { "type": "string" }
+        }
+      }
+    },
+    "verification_summary": {
+      "type": "object",
+      "description": "Aggregate view of source metadata across all three skills, for the forensic framing -- how many sources, of what type, were actually checked.",
+      "required": ["total_sources", "source_types_breakdown"],
+      "properties": {
+        "total_sources": { "type": "integer" },
+        "source_types_breakdown": {
+          "type": "object",
+          "description": "Count per source_type value (job-board/client-site/press/social/directory).",
+          "additionalProperties": { "type": "integer" }
+        }
+      }
+    }
+  }
+}

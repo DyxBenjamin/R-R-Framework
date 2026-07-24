@@ -45,6 +45,8 @@ Antes de arrancar, confirma (o infiere del mensaje del usuario):
   arranque de palabras clave de stack (`stack_signal_keywords`).
 - `assets/checklist.template.json` - forma del checklist que se instancia por
   cliente (no editar el template; copiarlo).
+- `../../schemas/envelope.schema.json` - esquema formal del sobre compartido
+  (`schema_version`, `skill`, fuentes) que este checklist tambien sigue.
 
 ## Estado en disco
 
@@ -67,12 +69,28 @@ skill.
 
 - Calcular `slug` del cliente y `checklist_path =
   .client-research/<slug>/stack-research/checklist.json`.
-- Si el archivo ya existe y no se pidio refresh: cargarlo. Los portales en
-  `done` se saltan; los que estan en `pending`, `in_progress` (una corrida
-  anterior quedo a medias) o `failed` se vuelven a intentar.
+- Si el archivo ya existe: revisar si tiene `schema_version`. Si no lo tiene
+  (checklist de una version anterior), migrarlo ahora -- ver
+  "Migracion desde version sin `schema_version`" mas abajo -- antes de seguir.
+- Si el archivo ya existe (migrado o no) y no se pidio refresh: cargarlo. Los
+  portales en `done` se saltan; los que estan en `pending`, `in_progress` (una
+  corrida anterior quedo a medias) o `failed` se vuelven a intentar.
 - Si no existe: leer `jobs.json`, instanciar un item de `boards` por cada
   portal con `enabled: true`, todos en `pending`, y escribir el checklist
-  inicial (con `client`, `slug`, `created_at`, `focus`).
+  inicial (`schema_version: 1`, `skill: "stack-research"`, `client`, `slug`,
+  `created_at`, `focus`) siguiendo `assets/checklist.template.json`.
+
+### Migracion desde version sin `schema_version`
+
+Si el checklist en disco no tiene `schema_version`, es de antes de este
+esquema (ver `../../references/checklist-pattern.md`). Migrar sobreescribiendo
+el archivo original (sin backup): agregar `schema_version: 1` y `skill:
+"stack-research"` al nivel superior si faltan, y convertir cada string de
+`posting_urls` en un objeto `{url, source_type: "job-board", access_date:
+null, publish_date: null}` -- esas fechas no se pueden reconstruir para datos
+viejos, solo las entradas nuevas de aca en adelante las llevan reales. Los
+items en `pending`/`in_progress` se preservan tal cual, la corrida a medias se
+retoma normal despues de migrar.
 
 ### 2. Despachar la busqueda de cada portal en background
 
@@ -104,7 +122,9 @@ Por cada portal pendiente:
 Cuando cada sub-agente en background termina y llega su notificacion:
 
 - Si devolvio resultados: marcar `done`, completar `postings_found`,
-  `stack_signals`, `posting_urls`, `checked_at` (timestamp actual).
+  `stack_signals`, `checked_at` (timestamp actual), y `posting_urls` con un
+  objeto por URL: `{url, source_type: "job-board", access_date: <hoy>,
+  publish_date: <fecha de la publicacion si es visible, si no null>}`.
 - Si fallo o no encontro nada accesible (login wall, sin resultados): marcar
   `failed` (o `done` con `postings_found: 0` si genuinamente no hay vacantes
   publicadas) y anotar `error` con una razon breve.

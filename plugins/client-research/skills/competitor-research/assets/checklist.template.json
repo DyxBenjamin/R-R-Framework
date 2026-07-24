@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "skill": "competitor-research",
+  "client": "",
+  "slug": "",
+  "created_at": "",
+  "updated_at": "",
+  "items": [
+    {
+      "id": "",
+      "label": "",
+      "status": "pending",
+      "findings": [],
+      "source_urls": [],
+      "checked_at": null,
+      "error": null
+    }
+  ],
+  "aggregate": {
+    "competitors_with_evidence": []
+  }
+}

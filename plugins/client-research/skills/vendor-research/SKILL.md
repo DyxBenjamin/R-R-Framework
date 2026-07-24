@@ -65,10 +65,28 @@ ya que no hay uno), con `findings` acumulando los proveedores detectados y sus
 ### 1. Preparar el checklist
 
 Calcular `slug` del cliente y `checklist_path =
-.client-research/<slug>/vendor-research/checklist.json`. Si existe y no se
+.client-research/<slug>/vendor-research/checklist.json`. Si existe, revisar
+`schema_version`: si falta, migrar ahora (ver "Migracion desde version sin
+`schema_version`" mas abajo) antes de seguir. Si existe (migrado o no) y no se
 pidio refresh, cargarlo y continuar desde los items `pending`/`in_progress`/
-`failed`. Si no existe, crearlo vacio (sin items todavia -- se van agregando a
-medida que el descubrimiento avanza, ver paso 2).
+`failed`. Si no existe, crearlo siguiendo `assets/checklist.template.json`
+(`schema_version: 1`, `skill: "vendor-research"`, sin items todavia -- se van
+agregando a medida que el descubrimiento avanza, ver paso 2).
+
+### Migracion desde version sin `schema_version`
+
+Si el checklist en disco no tiene `schema_version`, migrar sobreescribiendo el
+archivo original (sin backup): agregar `schema_version: 1` y `skill:
+"vendor-research"` al nivel superior si faltan, y convertir cada string de
+`source_urls` en un objeto `{url, source_type, access_date: null,
+publish_date: null}` -- `access_date`/`publish_date` no se pueden reconstruir
+para entradas viejas, pero `source_type` si se puede inferir: cada item de un
+checklist viejo ya corresponde a una de las 4 categorias de evidencia (su
+`label`/`id`, ej. "Sitio del cliente" -> `client-site`, "Prensa/comunicados"
+-> `press`, "LinkedIn/redes" -> `social`, "Directorios/procurement" ->
+`directory`), asi que todas las `source_urls` de ese item migran con ese
+`source_type`. Los items `pending`/`in_progress` se preservan, la corrida a
+medias se retoma normal despues de migrar.
 
 ### 2. Descubrir y buscar evidencia en background
 
@@ -97,16 +115,21 @@ decrecientes, sin tope fijo de cantidad.
 
 ### 3. Actualizar el checklist a medida que vuelven los resultados
 
-Marcar cada item `done` con sus `findings`/`source_urls`/`checked_at`, o
-`failed` con `error` si una categoria no encontro nada accesible. Guardar el
-checklist despues de cada actualizacion. Si el usuario pregunta el estado
-mientras tanto, leer el checklist actual sin esperar a que termine todo.
+Marcar cada item `done` con sus `findings`, `checked_at`, y `source_urls`
+como objetos `{url, source_type: <categoria de este item>, access_date:
+<hoy>, publish_date: <si es visible, si no null>}`; o `failed` con `error` si
+una categoria no encontro nada accesible. Guardar el checklist despues de
+cada actualizacion. Si el usuario pregunta el estado mientras tanto, leer el
+checklist actual sin esperar a que termine todo.
 
 ### 4. Agregar y reportar
 
 Unificar los proveedores encontrados en todas las categorias, deduplicando
 (case-insensitive) y contando en cuantas categorias/fuentes distintas aparece
-cada uno (señal de confianza). Escribir el agregado en el checklist y generar
+cada uno (señal de confianza). Escribir el agregado en `aggregate.vendors`
+(ver `assets/checklist.template.json` y `../../schemas/fixtures/vendor-research.example.json`
+para la forma exacta: `name`, `mentions`, `source_types`, `source_urls`) y
+generar
 `.client-research/<slug>/vendor-research/report.md`: nombre del cliente y
 fecha, proveedores detectados ordenados por confianza, con fuente(s) por cada
 uno. **Es una lista con fuentes, no una recomendacion evaluativa** -- no

@@ -1,5 +1,5 @@
 ---
-status: open
+status: resolved
 size: medium
 rounds_completed: 4
 questions_asked: 13
@@ -8,7 +8,10 @@ questions_asked: 13
 # kt — Client Research plugin (rename + vendor-research + competitor-research)
 
 ## Status
-open — 2026-07-22
+resolved — 2026-07-23. Built, validated, committed, pushed, and released as
+`client-research-v0.1.0` (CI green). Follow-up work (reporting pipeline: PDF/JSON
+export, source verification, cross-skill synthesis, more specialized research
+skills) is tracked separately in `client-research-reporting.md`, not here.
 
 ## Original Intent
 Person's ask, close to verbatim (from `/kt:idea`, graduated — credits `ideas/client-research.md`): "Vamos a modificar el nombre de nuestro plugin. Lo vamos a llamar Client Research y vamos a agregar otras herramientas, otras skills diseñadas específicamente para búsqueda de cosas con clientes. Que, además de buscar ahí, busque también sitios de proveedores de competencia. Estos recomiendan me diferentes opciones."
